@@ -57,7 +57,7 @@
                     <form action="{{route('filemanager.destroy',$data->id)}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('DELETE')
-                      <button type="button" class="btn btn-danger">Delete</button></a>
+                      <button type="submit" class="btn btn-danger">Delete</button></a>
                     </form>
                   </td>
                   </tr>
