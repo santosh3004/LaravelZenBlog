@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BlogCreateRequest;
 use App\Models\Blog;
 use App\Models\BlogsCategory;
 use Illuminate\Http\Request;
@@ -39,14 +40,8 @@ class BlogController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(BlogCreateRequest $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'slug' => 'required',
-            'content' => 'required',
-            'img'=>'required',
-        ]);
         $blog=new Blog;
         $blog->title=$request->title;
         $blog->content=$request->content;

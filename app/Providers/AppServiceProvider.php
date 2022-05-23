@@ -26,5 +26,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
+
+        view()->composer(['front.inc.header','front.inc.footer'], function ($view) {
+            $view->with('menu', \App\Models\Menu::orderby('order_id','asc')->get());
+        });
     }
 }

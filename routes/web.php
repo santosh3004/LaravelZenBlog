@@ -13,9 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'App\Http\Controllers\FrontendController@index');
+Route::get('/index', 'App\Http\Controllers\FrontendController@index');
+
+Route::get('/post/{id}', 'App\Http\Controllers\FrontendController@blog')-> name('post');
 
 //just for creating front-end pages
 // Route::get('/createtask', function () {

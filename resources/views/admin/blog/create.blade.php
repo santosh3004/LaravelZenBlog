@@ -21,6 +21,9 @@
                     <div class="col-sm-10">
                       <input type="text" name="title" class="form-control" id="name" placeholder="Blog Title">
                     </div>
+                    @error('title')
+                        {{ $message }}
+                    @enderror
                   </div>
                   <div class="form-group row">
 
@@ -28,6 +31,9 @@
                     <div class="col-sm-10">
                       <input type="text" name="slug" class="form-control" id="inputEmail3" placeholder="Slug Text">
                     </div>
+                    @error('slug')
+                        {{ $message }}
+                    @enderror
                   </div>
                   <div class="form-group row">
 
@@ -35,6 +41,9 @@
                     <div class="col-sm-10">
                       <input type="text" name="img" class="form-control" id="inputEmail3" placeholder="Image Link">
                     </div>
+                    @error('img')
+                        {{ $message }}
+                    @enderror
                   </div>
                   <div class="form-group row">
 
@@ -42,6 +51,9 @@
                     <div class="col-sm-10">
                       <input type="textarea" name="content" class="form-control" id="inputEmail3" placeholder="Content">
                     </div>
+                    @error('content')
+                        {{ $message }}
+                    @enderror
                   </div>
                 </div>
                 <!-- /.card-body -->
