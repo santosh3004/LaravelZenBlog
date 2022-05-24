@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,16 +19,19 @@ Route::get('/index', 'App\Http\Controllers\FrontendController@index');
 
 Route::get('/post/{id}', 'App\Http\Controllers\FrontendController@blog')-> name('post');
 
-//just for creating front-end pages
-// Route::get('/createtask', function () {
-//     return view('tasks.create');
-// });
+//just for creating front-end pagesx
+Route::get('/createtask', function () {
+    return view('tasks.create');
+});
 
-// Route::get('/managetask', function () {
-//     return view('tasks.index');
-// });
+Route::get('/managetask', function () {
+    return view('tasks.index');
+});
 
 Route::resource('task','App\Http\Controllers\TaskController');
+
+Route::get('export', [TaskController::class, 'export'])->name('export');
+Route::post('import', [TaskController::class, 'import'])->name('import');
 
 Auth::routes();
 

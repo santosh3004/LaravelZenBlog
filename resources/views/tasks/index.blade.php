@@ -13,6 +13,16 @@
 
     <div class="container">
         <a name="" id="" class="btn btn-primary" href="{{route('task.create')}}" role="button">Add Task</a>
+        <form action="{{route('import')}}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="">Import</label>
+                <input type="file"
+                  class="form-control" name="file" id="" aria-describedby="helpId" placeholder="">
+              </div>
+              @csrf
+              <button type="submit" class="btn btn-primary">Import</button>
+        </form>
+        <a name="" id="" class="btn btn-primary" href="{{route('export')}}" role="button">Export</a>
         <h4>Manage Tasks</h4>
         <table class="table">
             <thead>

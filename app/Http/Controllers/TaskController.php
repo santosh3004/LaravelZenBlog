@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\TaskExport;
+use App\Imports\TaskImport;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TaskController extends Controller
 {
@@ -107,5 +110,17 @@ class TaskController extends Controller
         $task->delete();
 
         return redirect('task');
+    }
+
+    public function import()
+    {
+        Excel::import(new TaskImport,request()->file('file'));
+
+        return back();
+    }
+
+    public function export()
+    {
+        return Excel::download(new TaskExport, 'tasks.xlsx');
     }
 }
