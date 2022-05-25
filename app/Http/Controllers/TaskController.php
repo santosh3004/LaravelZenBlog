@@ -7,6 +7,8 @@ use App\Imports\TaskImport;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use PDF;
+
 
 class TaskController extends Controller
 {
@@ -22,7 +24,7 @@ class TaskController extends Controller
     public function index()
     {
         $task = new Task;
-        $task = $task->get();
+        $task = $task->where('deleted_at',NULL)->get();
 
         return view('tasks.index',compact('task'));
     }
@@ -106,10 +108,29 @@ class TaskController extends Controller
     public function destroy($id)
     {
         $task = new Task;
-        $task = $task->where('id',$id)->first();
-        $task->delete();
+        $task = $task->withTrashed()->where('id',$id)->first();
+        $task->forcedelete();
 
         return redirect('task');
+    }
+    public function binindex(){
+        $task = new Task;
+        $task = $task->onlyTrashed()->get();
+        return view('tasks.bin',compact('task'));
+    }
+    public function recycle($id)
+    {
+        $faqs = Task::withTrashed()->where('id',$id)->first();
+        $faqs->delete();
+            return redirect('taskbin')->with('message','faq is Deleted Successfully.');
+    }
+
+    public function restore($id)
+    {
+        $faqs = Task::withTrashed()->where('id',$id)->first();
+        $faqs->restore();
+        return redirect('task')->with('message','faq is Restored Successfully');
+
     }
 
     public function import()
@@ -122,5 +143,13 @@ class TaskController extends Controller
     public function export()
     {
         return Excel::download(new TaskExport, 'tasks.xlsx');
+    }
+
+    public function generatePDF($id)
+    {
+        $task = new Task;
+        $task = $task->where('id',$id)->first();
+        $pdf = PDF::loadView('tasks.show',compact('task'));
+        return $pdf->download('task.pdf');
     }
 }

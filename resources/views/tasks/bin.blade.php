@@ -23,7 +23,7 @@
               <button type="submit" class="btn btn-primary">Import</button>
         </form>
         <a name="" id="" class="btn btn-primary" href="{{route('export')}}" role="button">Export</a>
-        <h4>Manage Tasks</h4>
+        <h4>Manage Tasks Bin</h4>
         <table class="table">
             <thead>
                 <tr>
@@ -40,12 +40,12 @@
                     <td>
                         <a name="" id="" class="btn btn-info" href="{{route('task.show',$t->id)}}" role="button">View</a>
                         <a name="" id="" class="btn btn-primary" href="{{route('task.edit',$t->id)}}" role="button">Edit</a>
-                        {{-- <form action="{{route('task.destroy',$t->id)}}" method="POST" enctype="multipart/form-data">
+                        {{-- <form action="{{route('task.recycle',$t->id)}}" method="POST" enctype="multipart/form-data">
                             @method('delete')
                             @csrf
                             <button type="submit" class="btn btn-danger">Delete</button>
                         </form> --}}
-                        <a name="" id="" class="btn btn-info" href="{{route('task.recycle',$t->id)}}" role="button">Recycle</a>
+                        <a name="" id="" class="btn btn-info" href="{{route('task.restore',$t->id)}}" role="button">Restore</a>
                         <a name="" id="" class="btn btn-success" href="{{route('generate-pdf',$t->id)}}" role="button">PDF Download</a>
                     </td>
                 </tr>

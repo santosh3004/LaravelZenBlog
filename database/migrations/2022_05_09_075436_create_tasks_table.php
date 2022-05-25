@@ -20,6 +20,7 @@ class CreateTasksTable extends Migration
             $table->integer('status')->default(1);
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

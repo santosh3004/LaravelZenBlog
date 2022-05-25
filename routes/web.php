@@ -24,14 +24,17 @@ Route::get('/createtask', function () {
     return view('tasks.create');
 });
 
-Route::get('/managetask', function () {
-    return view('tasks.index');
-});
+// Route::get('/managetask', function () {
+//     return view('tasks.index');
+// });
 
 Route::resource('task','App\Http\Controllers\TaskController');
-
+Route::get('task/recycle/{id}','App\Http\Controllers\TaskController@recycle')->name('task.recycle');
+Route::get('task/restore/{id}','App\Http\Controllers\TaskController@restore')->name('task.restore');
+Route::get('taskbin','App\Http\Controllers\TaskController@binindex')->name('task.bin');
 Route::get('export', [TaskController::class, 'export'])->name('export');
 Route::post('import', [TaskController::class, 'import'])->name('import');
+Route::get('generate-pdf/{id}','App\Http\Controllers\TaskController@generatePDF')->name('generate-pdf');
 
 Auth::routes();
 
