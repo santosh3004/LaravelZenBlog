@@ -8,9 +8,10 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    @notifyCss
   </head>
   <body>
-
+    <x:notify-messages />
     <div class="container">
         <a name="" id="" class="btn btn-primary" href="{{route('task.create')}}" role="button">Add Task</a>
         <form action="{{route('import')}}" method="POST" enctype="multipart/form-data">
@@ -54,6 +55,7 @@
         </table>
 
     </div>
+    @notifyJs
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

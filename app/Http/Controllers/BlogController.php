@@ -47,6 +47,7 @@ class BlogController extends Controller
         $blog->content=$request->content;
         $blog->img=$request->img;
         $blog->slug=$request->slug;
+        $blog->category_id=$request->category_id;
         $blog->user_id=1;
         $blog->save();
         return redirect()->route('blog.index');

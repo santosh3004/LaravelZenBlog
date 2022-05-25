@@ -8,6 +8,7 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
+use notify;
 
 
 class TaskController extends Controller
@@ -122,14 +123,15 @@ class TaskController extends Controller
     {
         $faqs = Task::withTrashed()->where('id',$id)->first();
         $faqs->delete();
-            return redirect('taskbin')->with('message','faq is Deleted Successfully.');
+        notify()->success('Task Deleted Successfully');
+        return redirect('taskbin');
     }
 
     public function restore($id)
     {
         $faqs = Task::withTrashed()->where('id',$id)->first();
         $faqs->restore();
-        return redirect('task')->with('message','faq is Restored Successfully');
+        return redirect('task')->with('message','Taskd is Restored Successfully');
 
     }
 

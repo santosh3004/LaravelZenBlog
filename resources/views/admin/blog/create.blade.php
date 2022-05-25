@@ -55,12 +55,31 @@
                         {{ $message }}
                     @enderror
                   </div>
-                </div>
-                <!-- /.card-body -->
-                <div class="card-footer">
-                  <button type="submit" name="submit" class="btn btn-info">Add Blog</button>
 
+                  <div class="form-group row">
+
+                    <label for="inputEmail3" class="col-sm-2 col-form-label">Content</label>
+                    <div class="col-sm-10">
+                      <select name="category_id" class="form-control">
+                        <option value="">Select Category</option>
+                        @foreach($blog_category as $category)
+                        <option value="{{$category->id}}">{{$category->title}}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                    @error('category')
+                        {{ $message }}
+                    @enderror
+                  </div>
+                  <div class="card-footer">
+                    <button type="submit" name="submit" class="btn btn-info">Add Blog</button>
+                  </div>
                 </div>
+
+
+
+                <!-- /.card-body -->
+
                 <!-- /.card-footer -->
               </form>
             </div>

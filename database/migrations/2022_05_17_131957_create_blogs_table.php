@@ -20,6 +20,7 @@ class CreateBlogsTable extends Migration
             $table->string('img');
             $table->text('content');
             $table->bigInteger('user_id');
+            $table->bigInteger('category_id');
             $table->boolean('status')->default(1);
             $table->timestamps();
         });
