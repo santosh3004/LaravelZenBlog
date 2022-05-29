@@ -1,0 +1,708 @@
+public function registerEvents(): array
+    {
+        $styleArray = [
+                'font' => [
+                'bold' => true,
+                ],
+                'borders' => [
+                    'outline' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                        'color' => ['argb' => '00000000'],
+                    ]
+                ]
+        ];
+
+
+            return [
+                AfterSheet::class    => function(AfterSheet $event) use ($styleArray)
+                {
+                    $cellRange = 'A1:A1'; // All headers
+                    //$event->sheet->getDelegate()->getStyle($cellRange)->getFont()->setName('Calibri');
+                    $event->sheet->getDelegate()->getStyle($cellRange)->getFont()->setSize(12);
+                    $event->sheet->getStyle($cellRange)->ApplyFromArray($styleArray);
+                },
+            ];
+
+
+    }
+
+
+
+For soft delete:-
+step 1:- add following in the migration file.
+$table->softDeletes();
+
+Step 2:- add the following inside the class.
+ use SoftDeletes;
+
+Example:-
+use Illuminate\Database\Eloquent\SoftDeletes;
+class Client extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = [
+        'title', 'logo', 'order_no','status',
+    ];
+}
+
+Step 3:- In controller.
+        $faqs = faq::withTrashed()->where('id',$id)->first();
+        if($faqs->trashed()) {
+            $faqs->forceDelete();
+            return redirect('faqs?data-show=trashed')->with('message','faq is Deleted Parmanently.');
+        }
+        else{
+            $faqs->delete();
+            return redirect('faqs')->with('message','faq is Deleted Successfully.');
+
+Step 4:-
+// Faqs Route
+Route::resource('faqs','FaqController')->middleware('auth');
+Route::get('faqs/restore/{id}',['as'=>'faqs.restore','uses'=>'FaqController@restore'])->middleware('auth');
+
+Also create restore function in controller
+    public function restore($id)
+    {
+        $faqs = faq::withTrashed()->where('id',$id)->first();
+        $faqs->restore();
+
+        return redirect('faqs')->with('message','faq is Restored Successfully');
+
+    }
+
+
+
+
+
+    Laravle Cron Job | Wishing Happy Birthday Based on Birthdate
+
+Step 1:- Create a laravel project.
+laravel new cron-job
+
+Step 2:- Create a database name "cron-job".
+
+Step 3:- Database configuration on .env file.
+
+Step 4:- Run php artisan migrate command.
+
+Step 5:- Add birthdate in the user table using the command:-
+php artisan make:migration add_birthdate_to_users_table --table=users
+
+Example:-
+Schema::table('users', function (Blueprint $table) {
+
+            $table->date('birthdate')->nullable();
+
+        });
+
+Step 6:- run php artisan migrate
+
+Step 7:- add birthdate to User model
+Example:-
+    protected $fillable = [
+
+        'name',
+
+        'email',
+
+        'password',
+
+        'birthdate'
+
+    ];
+
+Step 8:- Create database seeder for User table to insert demo data.
+
+php artisan make:seeder UserSeeder
+
+Example:-
+        $users = [
+
+            [
+
+                "name" => "Hardik Savani",
+
+                "email" => "hardik@gmail.com",
+
+                "password" => bcrypt("123456"),
+
+                "birthdate" => "2001-05-23"
+
+            ],
+
+            [
+
+                "name" => "Vimal Kashiyani",
+
+                "email" => "vimal@gmail.com",
+
+                "password" => bcrypt("123456"),
+
+                "birthdate" => "2001-06-23"
+
+            ],
+
+            [
+
+                "name" => "Harshad Pathak",
+
+                "email" => "harshad@gmail.com",
+
+                "password" => bcrypt("123456"),
+
+                "birthdate" => "2001-07-23"
+
+            ]
+
+        ];
+
+
+
+        foreach ($users as $key => $value) {
+
+            User::create($value);
+
+        }
+
+    }
+
+Step 9:- Run the command
+php artisan db:seed --class=UserSeeder
+
+Step 10:- Create mail class.
+php artisan make:mail BirthDayWish
+
+Example:-
+Inside Class:
+public $user;
+
+
+
+    /**
+
+     * Create a new message instance.
+
+     *
+
+     * @return void
+
+     */
+
+    public function __construct($user)
+
+    {
+
+        $this->user = $user;
+
+    }
+
+
+
+    /**
+
+     * Build the message.
+
+     *
+
+     * @return $this
+
+     */
+
+    public function build()
+
+    {
+
+        return $this->subject('Happy Birthday '. $this->user->name)
+
+                    ->view('emails.birthdayWish');
+
+    }
+
+Step 11:- Create views/emails/birthdaywish.blade.php
+
+Step 12:- Do smpt mail configuration in .env file. Note: you can comment previous config. and paste it.
+
+MAIL_MAILER=smtp
+
+MAIL_HOST=smtp.gmail.com
+
+MAIL_PORT=465
+
+MAIL_USERNAME=mygoogle@gmail.com
+
+MAIL_PASSWORD=rrnnucvnqlbsl
+
+MAIL_ENCRYPTION=ssl
+
+MAIL_FROM_ADDRESS=mygoogle@gmail.com
+
+MAIL_FROM_NAME="${APP_NAME}"
+
+Step 13:- Create command.
+php artisan make:command AutoBirthDayWish
+
+Step 14:- Go inside app/console/commands/AutoBirthdayWish.php
+
+<?php
+
+
+
+namespace App\Console\Commands;
+
+
+
+use Illuminate\Console\Command;
+
+use Mail;
+
+use App\Mail\BirthDayWish;
+
+use App\Models\User;
+
+
+
+class AutoBirthDayWish extends Command
+
+{
+
+    /**
+
+     * The name and signature of the console command.
+
+     *
+
+     * @var string
+
+     */
+
+    protected $signature = 'auto:birthdaywith';
+
+
+
+    /**
+
+     * The console command description.
+
+     *
+
+     * @var string
+
+     */
+
+    protected $description = 'Command description';
+
+
+
+    /**
+
+     * Execute the console command.
+
+     *
+
+     * @return int
+
+     */
+
+    public function handle()
+
+    {
+
+        $users = User::whereMonth('birthdate', date('m'))
+
+                    ->whereDay('birthdate', date('d'))
+
+                    ->get();
+
+
+
+        if ($users->count() > 0) {
+
+            foreach ($users as $user) {
+
+                Mail::to($user)->send(new BirthDayWish($user));
+
+            }
+
+        }
+
+
+
+        return 0;
+
+    }
+
+}
+
+Step 15:- Go inside kernel.php and specify command in schedule.
+    protected function schedule(Schedule $schedule)
+
+    {
+
+        $schedule->command('auto:birthdaywith')->daily();
+
+    }
+
+Note:-
+Scheduling accepts following:-
+Method 	Description
+->cron(‘* * * * * *’); 	Run the task on a custom Cron schedule
+->everyMinute(); 	Run the task every minute
+->everyFiveMinutes(); 	Run the task every five minutes
+->everyTenMinutes(); 	Run the task every ten minutes
+->everyFifteenMinutes(); 	Run the task every fifteen minutes
+->everyThirtyMinutes(); 	Run the task every thirty minutes
+->hourly(); 	Run the task every hour
+->hourlyAt(17); 	Run the task every hour at 17 mins past the hour
+->daily(); 	Run the task every day at midnight
+->dailyAt(’13:00′); 	Run the task every day at 13:00
+->twiceDaily(1, 13); 	Run the task daily at 1:00 & 13:00
+->weekly(); 	Run the task every week
+->weeklyOn(1, ‘8:00’); 	Run the task every week on Tuesday at 8:00
+->monthly(); 	Run the task every month
+->monthlyOn(4, ’15:00′); 	Run the task every month on the 4th at 15:00
+->quarterly(); 	Run the task every quarter
+->yearly(); 	Run the task every year
+->timezone(‘America/New_York’); 	Set the timezone
+
+Step 16:- Now, it's time to test.
+Way 1:
+Test the specific cron job.
+php artisan auto:birthdaywith
+
+Way 2:
+php artisan schedule:work
+
+
+
+
+
+
+
+Stripe Payment:-
+Step 1:- Create your account on https://dashboard.stripe.com/login .
+
+Step 2:- Get publisher key and secret key from stripe dashboard api page.
+
+Step 3:- Open .env file and put this code.
+
+STRIPE_PUBLISHABLE_KEY=PASTE_PUBLISHABLE_KEY
+STRIPE_SECRET_KEY=PASTE_SECRET_KEY
+STRIPE_CURRENCY=USD
+
+Step 4:- php artisan config:cache
+
+Step 5:- Create a payments table.
+
+php artisan make:migration create_payments_table
+
+Step 6:- You can insert the following fields.
+public function up()
+{
+    Schema::create('payments', function (Blueprint $table) {
+        $table->bigIncrements('id');
+        $table->string('payment_id');
+        $table->string('payer_email');
+        $table->float('amount', 10, 2);
+        $table->string('currency');
+        $table->string('payment_status');
+        $table->timestamps();
+    });
+
+Step 7:- Run the following command.
+php artisan migrate
+
+Step 8:- Create a page payment.blade.php which consists of form for sending money.
+
+<link rel="stylesheet" href="{{ asset('/css/style.css') }}" />
+<script src="https://js.stripe.com/v3/"></script>
+
+@if ($message = Session::get('success'))
+    <div class="success">
+        <strong>{{ $message }}</strong>
+    </div>
+@endif
+
+
+@if ($message = Session::get('error'))
+    <div class="error">
+        <strong>{{ $message }}</strong>
+    </div>
+@endif
+
+<form action="{{ url('charge') }}" method="post" id="payment-form">
+    <div class="form-row">
+        <p><input type="text" name="amount" placeholder="Enter Amount" /></p>
+        <p><input type="email" name="email" placeholder="Enter Email" /></p>
+        <label for="card-element">
+        Credit or debit card
+        </label>
+        <div id="card-element">
+        <!-- A Stripe Element will be inserted here. -->
+        </div>
+
+        <!-- Used to display form errors. -->
+        <div id="card-errors" role="alert"></div>
+    </div>
+    <p><button>Submit Payment</button></p>
+    {{ csrf_field() }}
+</form>
+<script>
+var publishable_key = '{{ env('STRIPE_PUBLISHABLE_KEY') }}';
+</script>
+<script src="{{ asset('/js/card.js') }}"></script>
+}
+
+Step 9:- go to web.php
+
+Route::get('/payment', 'PaymentController@index'); (show form)
+Route::post('/charge', 'PaymentController@charge');
+Route::get('/confirm', 'PaymentController@confirm');
+
+Step 10:- Go to public/js and create card.js .
+
+// Create a Stripe client.
+var stripe = Stripe(publishable_key);
+
+// Create an instance of Elements.
+var elements = stripe.elements();
+
+// Custom styling can be passed to options when creating an Element.
+// (Note that this demo uses a wider set of styles than the guide below.)
+var style = {
+    base: {
+        color: '#32325d',
+        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+        fontSmoothing: 'antialiased',
+        fontSize: '16px',
+        '::placeholder': {
+            color: '#aab7c4'
+        }
+    },
+    invalid: {
+        color: '#fa755a',
+        iconColor: '#fa755a'
+    }
+};
+
+// Create an instance of the card Element.
+var card = elements.create('card', {style: style});
+
+// Add an instance of the card Element into the `card-element` <div>.
+card.mount('#card-element');
+
+// Handle real-time validation errors from the card Element.
+card.addEventListener('change', function(event) {
+    var displayError = document.getElementById('card-errors');
+    if (event.error) {
+        displayError.textContent = event.error.message;
+    } else {
+        displayError.textContent = '';
+    }
+});
+
+// Handle form submission.
+var form = document.getElementById('payment-form');
+form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    stripe.createToken(card).then(function(result) {
+        if (result.error) {
+            // Inform the user if there was an error.
+            var errorElement = document.getElementById('card-errors');
+            errorElement.textContent = result.error.message;
+        } else {
+            // Send the token to your server.
+            stripeTokenHandler(result.token);
+        }
+    });
+});
+
+// Submit the form with the token ID.
+function stripeTokenHandler(token) {
+    // Insert the token ID into the form so it gets submitted to the server
+    var form = document.getElementById('payment-form');
+    var hiddenInput = document.createElement('input');
+    hiddenInput.setAttribute('type', 'hidden');
+    hiddenInput.setAttribute('name', 'stripeToken');
+    hiddenInput.setAttribute('value', token.id);
+    form.appendChild(hiddenInput);
+
+    // Submit the form
+    form.submit();
+}
+
+Step 11:- create style.css inside css .
+
+.StripeElement {
+    box-sizing: border-box;
+
+    height: 40px;
+
+    padding: 10px 12px;
+
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: white;
+
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+}
+
+.StripeElement--focus {
+    box-shadow: 0 1px 3px 0 #cfd7df;
+}
+
+.StripeElement--invalid {
+    border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+}
+
+Step 12:- NOw, install omnipay package.
+composer require league/omnipay omnipay/stripe
+
+Step 13:- create a payment controller.
+php artisan make:controller PaymentController
+
+Step 14:- create a Payment model
+
+php artisan make:model Payment
+
+Step 15:- Insert this code inside Payment Controller.
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Omnipay\Omnipay;
+use App\Models\Payment;
+
+class PaymentController extends Controller
+{
+    public $gateway;
+    public $completePaymentUrl;
+
+    public function __construct()
+    {
+        $this->gateway = Omnipay::create('Stripe\PaymentIntents');
+        $this->gateway->setApiKey(env('STRIPE_SECRET_KEY'));
+        $this->completePaymentUrl = url('confirm');
+    }
+
+    public function index()
+    {
+        return view('payment');
+    }
+
+    public function charge(Request $request)
+    {
+        if($request->input('stripeToken'))
+        {
+            $token = $request->input('stripeToken');
+
+            $response = $this->gateway->authorize([
+                'amount' => $request->input('amount'),
+                'currency' => env('STRIPE_CURRENCY'),
+                'description' => 'This is a X purchase transaction.',
+                'token' => $token,
+                'returnUrl' => $this->completePaymentUrl,
+                'confirm' => true,
+            ])->send();
+
+            if($response->isSuccessful())
+            {
+                $response = $this->gateway->capture([
+                    'amount' => $request->input('amount'),
+                    'currency' => env('STRIPE_CURRENCY'),
+                    'paymentIntentReference' => $response->getPaymentIntentReference(),
+                ])->send();
+
+                $arr_payment_data = $response->getData();
+
+                $this->store_payment([
+                    'payment_id' => $arr_payment_data['id'],
+                    'payer_email' => $request->input('email'),
+                    'amount' => $arr_payment_data['amount']/100,
+                    'currency' => env('STRIPE_CURRENCY'),
+                    'payment_status' => $arr_payment_data['status'],
+                ]);
+
+                return redirect("payment")->with("success", "Payment is successful. Your payment id is: ". $arr_payment_data['id']);
+            }
+            elseif($response->isRedirect())
+            {
+                session(['payer_email' => $request->input('email')]);
+                $response->redirect();
+            }
+            else
+            {
+                return redirect("payment")->with("error", $response->getMessage());
+            }
+        }
+    }
+
+    public function confirm(Request $request)
+    {
+        $response = $this->gateway->confirm([
+            'paymentIntentReference' => $request->input('payment_intent'),
+            'returnUrl' => $this->completePaymentUrl,
+        ])->send();
+
+        if($response->isSuccessful())
+        {
+            $response = $this->gateway->capture([
+                'amount' => $request->input('amount'),
+                'currency' => env('STRIPE_CURRENCY'),
+                'paymentIntentReference' => $request->input('payment_intent'),
+            ])->send();
+
+            $arr_payment_data = $response->getData();
+
+            $this->store_payment([
+                'payment_id' => $arr_payment_data['id'],
+                'payer_email' => session('payer_email'),
+                'amount' => $arr_payment_data['amount']/100,
+                'currency' => env('STRIPE_CURRENCY'),
+                'payment_status' => $arr_payment_data['status'],
+            ]);
+
+            return redirect("payment")->with("success", "Payment is successful. Your payment id is: ". $arr_payment_data['id']);
+        }
+        else
+        {
+            return redirect("payment")->with("error", $response->getMessage());
+        }
+    }
+
+    public function store_payment($arr_data = [])
+    {
+        $isPaymentExist = Payment::where('payment_id', $arr_data['payment_id'])->first();
+
+        if(!$isPaymentExist)
+        {
+            $payment = new Payment;
+            $payment->payment_id = $arr_data['payment_id'];
+            $payment->payer_email = $arr_data['payer_email'];
+            $payment->amount = $arr_data['amount'];
+            $payment->currency = env('STRIPE_CURRENCY');
+            $payment->payment_status = $arr_data['payment_status'];
+            $payment->save();
+        }
+    }
+}
+
+Now, you can use dummy credit cards for testing the payment.
+
+https://stripe.com/docs/testing
+
+
+https://artisansweb.net/stripe-payment-gateway-integration-in-laravel/
+
+https://github.com/thephpleague/omnipay-stripe
+
+
