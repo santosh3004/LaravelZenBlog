@@ -706,3 +706,61 @@ https://artisansweb.net/stripe-payment-gateway-integration-in-laravel/
 https://github.com/thephpleague/omnipay-stripe
 
 
+
+
+
+
+Joining
+Raw Query
+
+Eloquet Query
+
+Eloquent Relationship
+One to Many
+many to one
+many to many
+one to one
+
+
+Example:-
+
+Tale:- product_category
+Model: Product_category (one)
+
+
+    public function subcategory()
+    {
+        return $this->hasMany('App\Models\Subcategory','product_category_id','id');
+    }
+
+
+
+Table:- subcategory
+Model: Subcategory (many)
+
+    public function product_category()
+    {
+        return $this->belongsTo('App\Models\Product_category','product_category_id','id');
+    }
+
+
+How to retreive data in view ?
+If I am going to show product category in the index view of subcategory. Then, I should do following:-
+
+{{$category->product_category()->first()->name}}
+
+
+Blogs System
+
+Blog category
+You accept blot category from the user.
+
+
+blog
+
+You also accept blog category.
+Blog category
+select box
+(data will be fetched from blog_category table)
+
+

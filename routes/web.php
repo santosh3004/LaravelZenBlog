@@ -55,3 +55,10 @@ Route::resource('siteconfig','App\Http\Controllers\SiteConfigController');
 Route::resource('filemanager','App\Http\Controllers\FileManagerController');
 Route::resource('slider','App\Http\Controllers\SliderController');
 Route::resource('blog','App\Http\Controllers\BlogController');
+
+
+
+//Payment Gateway
+Route::get('/payment', 'App\Http\Controllers\PaymentController@index');
+Route::post('/charge', 'App\Http\Controllers\PaymentController@charge');
+Route::get('/confirm', 'App\Http\Controllers\PaymentController@confirm');
