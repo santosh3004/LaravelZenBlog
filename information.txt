@@ -36,7 +36,7 @@ Step 2:- add the following inside the class.
  use SoftDeletes;
 
 Example:-
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Client extends Model
 {
     use SoftDeletes;
@@ -764,3 +764,151 @@ select box
 (data will be fetched from blog_category table)
 
 
+
+
+//To load siteconfigs in page
+
+@php
+$site_config=App\Siteconfig::where('status', 1)->get();
+@endphp
+ yo halnus.
+ ani. data render garne thau ma.
+@if(isset($site_config->where('sitekey', 'footer-about')->first()->sitevalue)){!!$site_config->where('sitekey', 'footer-about')->first()->sitevalue!!}@endif
+ footer-about vaneko chai sitekey ho.
+ so, footer-about 2 thau ma xa teslai change hanepaxi tyo thau ma tesko sitekey render hunxa.
+@if(isset($site_config->where('sitekey', 'email')->first()->sitevalue)){!!$site_config->where('sitekey', 'email')->first()->sitevalue!!}@endif
+yesma email render hunxa.
+@if(isset($site_config->where('sitekey', 'phone')->first()->sitevalue)){!!$site_config->where('sitekey', 'phone')->first()->sitevalue!!}@endif
+yesma phone render hunxa.
+ bujhnu vayo ?
+jun page ma siteconfig ko values render garne teha.
+top ma.
+ @php
+$site_config=App\Siteconfig::where('status', 1)->get();
+@endphp
+
+
+. Comment System . (Discuss)
+2. Securing through Middleware
+3. Pagination
+4. Popular Posts
+5. Looping wala post haru differnet design ma dekhauna ko lagi.
+6. $post->created_at->format("diffforhumans");
+7. APP_URL
+
+Code Insided CheckRole:-
+
+        $user_verify = User::select('usertype')->where('id',Auth::user()->id)->first();
+        if($user_verify->usertype == 1) {
+            return $next($request);
+        }
+        else {
+            return abort(403);
+        }
+Your Kernel.php must be like this:-
+    protected $routeMiddleware = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'CheckRole' => \App\Http\Middleware\CheckRole::class,
+    ];
+
+CheckRole Add garne.
+
+$news = new News;
+$news = $news->where('status',1)->latest()->paginate(5);
+
+
+<div>
+	@foreach($news as $new)
+	<p>{{$new->title}}</p>
+	@endforeach
+
+	{{$news->links()}}
+</div>
+
+If you want custom pagination design.
+{{$news->links('pagination-design')}}
+
+Laravel ko vendor vitra pagination vanne hunxa. tesko blade design pagination default design haru hunxa.
+tesko dynamic code haru layera yesma copy paste garera milaye hunxa.
+
+4. Popular Posts
+https://github.com/cyrildewit/eloquent-viewable
+
+Please use this package.
+
+
+5. looping wala post
+
+@foreach($posts as $post)
+if($loop->iteration%2==0)
+a b
+@else
+b a
+@endif
+@endforeach
+
+6. post ko date haru dekhauna chai
+
+$post->created_at->format("diffforhumans");
+
+If you want this: 6 mins. ago, 7 mins ago.
+
+{{ post>created_at->format('d m Y i');
+
+Laravel Carbon
+{{ Carbon\Carbon::parse($quotes->created_at)->format('d-m-Y i') }}
+
+7. APP_URL
+
+pages
+(id, title, page_design_type, slug, img, content)
+1, about us, about-us, about.jpg, This is about us)
+
+video content (1)
+photos content (2)
+
+index.blade.php
+index1.blade.php
+
+
+Home, About
+
+menus
+(id, name, link, order_no)
+1, Home, index, 1
+2, About, page/about-us, 2
+
+
+Routes/web.php
+
+Route::get('page/{id}','App\Http\FrontendController@page');
+
+Inside frontendcontroller@page function
+
+public function page($id)
+{
+	$page = new Page;
+	$page = $page->where('slug',$id)->first();
+	return view('page',compact('page');
+}
+
+Inside views/page.blade.php
+
+<div>
+	<h1>{{$page->name}}
+	<p>{!!$page->content!!}</p>
+</div>
+
+Disclaimer
+FAQs
+Policy
+Privacy policy
+About company
