@@ -912,3 +912,141 @@ FAQs
 Policy
 Privacy policy
 About company
+
+
+
+
+
+
+Creating API in Laravel using passport
+
+Step 1:- Install Passport
+composer require laravel/passport
+
+Step 2:- Migrate all the files
+php artisan migrate
+
+Step 3:- Install Passport
+php artisan passport:install
+
+
+Step 4:- Add following in three places
+HasApiTokens in App/Models/User.php
+
+Passport::routes(); inside public function boot() in AuthServiceProvider.php
+
+
+Step 5:- Add following code inside Config/auth.php inside guards
+    'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+            'hash' => true,
+        ],
+    ],
+
+Step 6:- Create products table in the database.
+php artisan make:migration create_products_table
+
+and add following fields.
+$table->string('name');
+$table->text('detail');
+
+then, php artisan migrate
+
+Step7:- Create a model for products.
+php artisan make:model Product
+
+Step 8:- Create Api routes, Place this code inside Routes/api.php
+
+Route::post('register', 'API\RegisterController@register');
+
+Route::middleware('auth:api')->group( function () {
+	Route::resource('products', 'API\ProductController');
+});
+
+Step 9:- Create a API folder inside HTTP/Controllers/API and create three files BaseController.php, RegisterController.php and ProductController.php
+
+Now, Our API is ready:-
+
+Here is Routes URL with Verb:
+
+1) Login: Verb:GET, URL:http://localhost:8000/oauth/token
+
+2) Register: Verb:GET, URL:http://localhost:8000/api/register
+
+3) List: Verb:GET, URL:http://localhost:8000/api/products
+
+4) Create: Verb:POST, URL:http://localhost:8000/api/products
+
+5) Show: Verb:GET, URL:http://localhost:8000/api/products/{id}
+
+6) Update: Verb:PUT, URL:http://localhost:8000/api/products/{id}
+
+7) Delete: Verb:DELETE, URL:http://localhost:8000/api/products/{id}
+
+
+1) Login: Verb:GET, URL:http://localhost:8000/oauth/token
+
+Method: POST
+URI: http://localhost:8000/oauth/token
+Go to body  and select form-data
+Input the following:-
+grant_type = password
+client_id = 2 (from oauth_clients table (id))
+client_secret = 5WsCXHwQkb5spIvzSm7QVR1y0WIYmwhbzzXjqSIU (from oauth_clients table (secret))
+username = email  here
+password = password here
+scope =
+
+Result will look like this:-
+{
+    "token_type": "Bearer",
+    "expires_in": 31536000,
+    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiYTQ5ZDE0ZDZlZmQzOGI2ZDkyMzBkY2M3ZDNiY2FlZjcwNDNlZGEwYmE3MGU1YmNhNmE2MWExODY2YzIzNjBhNzRhZTQ4ODA4YjdiOGVhOGIiLCJpYXQiOjE2NTQ5Mjg4MTMsIm5iZiI6MTY1NDkyODgxMywiZXhwIjoxNjg2NDY0ODEzLCJzdWIiOiIyIiwic2NvcGVzIjpbXX0.CqfI2cCHwsTgLY9ApJpPVygDK-zAEo0JxE-0T_NE7ivjTnrmdDeAUSSs7AAFIi-5wxVqYKegUC4oSNSZsy9qtDWRvqa_3RfxD7Bs-6I-er-FlnJflX-IMkHJpnea_rp83Xhrm3pLtzGhj85-InOOK6MLR4iVl-8EqdJ_JLpmRsK768Hu7IxK8X17zgQvkNmDs4NWH2x_GCFAL9FpC3jPutLwTzMOe4UqLqTG73PafFDFaXZ5dU5FiONn2KjBmqpUnHi_1i0pcSOQrxSqBVX2GJIiDidOvL1thZ2Z_4WVcq8uwKT0Fr9mdKBI0k7pySj6XprZakFPkyWGEh6VdYHTCwI7FQAqhEuzoYeHd9uUxtmUKNTSGDSLLLOcQyfayoiM5UPyQwl7sonNb0ZGn06KeAhe17mthWk3TSHLzavwPNB2W5A9sYp6XhGvBs-DnIcFMkqIlJ__uKvgRC-J4fGBGtbi2_ey3i-wFwvVawoRfwc0Tv6ZogllsSbrVMA1pLkiUa0cJ-RsmVkZSAqnqExeynD-9r0zCLZCiNLSQQnzb-HwJWdZKxHscxEB4t5wpEA-hFvDp6QEIkneoUB9H67MzFljC2AuGsRo17ai8ssO0jKyG5jyKq-7DrJ3lD8F5Nwg2ceIdENE6_j1G-exY8nf6RaWyxVObcWl9hyJSnv-dw4",
+    "refresh_token": "def502008201253bc9ec09f3c3ae6b9632d5a1bd85dbdab6e2900eae33dbf158c0fd46eca1fad80c0e79185660834dc49b311122487a1fca008a3c53c2d5a51704a482c28b727d5690d8a9f49e93b4f436d63006d277788fca2b6d09c15930e7a3a7423bd5eb1f2e880c9913960442fa108d197e59a659a305add40e8f0d0cbaeda0fca7ad7960c562bbef9caf52308de67200935053d992a553891115977deff50705bdd762fccbcfdfd89a227b80f1eaec09478fb6b6fd76358ea4077053f589d8e4c7447b999bdc0a9d888baefada6445fef50c5ea5dcf82c8589c08d4b80484f7d4ad2f0ef6959fbbf0b9bc07fd9fe4ae34dc3488168b40d54810065ea9cdbe39793eca5c979922816f1e83e366ee8f2b8a690a3a5ef7f2ea3b13b58334e056897cd76299d6bd613492cfd5071865dfb25ecc6037a28030d2832b65ec1fc032d9623f789bfddf39f857b2fe58b1521a32cd9fde08ee7d9678146925df23418"
+}
+
+2) Register: Verb:POST, URL:http://localhost:8000/api/register
+Method: POST
+URI : http://localhost:8000/api/register
+Go to body  and select form-data
+Input the following:-
+name
+email
+password
+c_password
+
+
+
+3) List: Verb:GET, URL:http://localhost:8000/api/products
+
+To access protected routes, you need to provide access keys.
+
+    Authorization tab > Choose Bearer Token from Type dropdown
+    And finally place the token.
+and place the access token.
+
+Now, API is done.
+
+
+Getting started with Livewire
+
+Step 1:- Start a Laravel project and install livewire.
+composer require livewire/livewire
+
+Step 2:- Initilize livewire styles and scripts.
+@livewireStyles
+@livewireScripts
+
+Step 3:- php artisan make:livewire component_name
+
+php artisan make:livewire counter
+
+
+Step 4:- php artisan  make:livewire comment
