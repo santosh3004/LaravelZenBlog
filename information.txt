@@ -957,7 +957,7 @@ and add following fields.
 $table->string('name');
 $table->text('detail');
 
-then, php artisan migrate
+then, php artisan migrate kjhkjh
 
 Step7:- Create a model for products.
 php artisan make:model Product
