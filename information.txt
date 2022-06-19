@@ -1050,3 +1050,15 @@ php artisan make:livewire counter
 
 
 Step 4:- php artisan  make:livewire comment
+
+
+
+
+create a new file in root folder .htacess name vako file create file create garne.
+and paste this code inside .htaccess file.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
